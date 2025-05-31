@@ -319,4 +319,4 @@ When slots are found:
 
 Recommended to run on a server with stable internet connection
 # 📜 License
-## MY License - Free for personal use. Hate commercials.
+## MY License - Free for personal use.
