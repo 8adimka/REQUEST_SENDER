@@ -3,26 +3,32 @@
 # 🇷🇺 Русская версия
 
 ## 📋 Описание
+
 Программа автоматически проверяет доступность слотов (citas) на официальном сайте Министерства внутренних дел Испании для замены удостоверения личности (TIE, NIE, tarjeta roja) для лиц, запросивших убежище. При обнаружении свободных слотов отправляет уведомление в ваш Telegram-бот, после чего введёт ваши личные данные и закончит запись в автоматическом режиме, либо вы можете завершить запись вручную.
-### Она нужна вам и придётся со всем этим разобраться если:
+
+### Она нужна вам и придётся со всем этим разобраться если
+
 - Вы живёте в Испании (особенно в Аликанте)
 - Вы подавались на убежище и подошёл срок менять карту
 - Вы не хотите платить 100 евро ситоловам, которые всё сделают за вас
 
 ## Используемый стек технологий
+
 - Python 3 — основной язык программирования
 - selenium — автоматизация действий в браузере
 - undetected-chromedriver — модифицированный драйвер Chrome для обхода защиты от ботов
 - requests — для отправки HTTP-запросов (например, к API)
 - python-dotenv — для загрузки переменных окружения из .env файла
 
-## Среда выполнения:
+## Среда выполнения
+
 - Arch Linux / Windows (проект кроссплатформенный)
 - Google Chrome (работа через undetected-chromedriver)
 
 ## 🔗 Официальный сайт: [https://icp.administracionelectronica.gob.es/icpco/index](https://icp.administracionelectronica.gob.es/icpco/index)
 
 ### 🔔 Настройка Telegram-бота
+
 1. Создайте бота через [BotFather](https://t.me/BotFather):
    - Отправьте `/newbot`
    - Укажите имя бота (например: `CitaCheckerBot`)
@@ -40,9 +46,11 @@
 ### ⚙️ Установка на Linux (Arch)
 
 1. **Установите Python 3.11:**
+
    ```bash
    sudo pacman -S python311
    ```
+
 2. Создайте виртуальное окружение:
 
 ```bash
@@ -50,27 +58,32 @@ python3.11 -m venv ~/venv/cita_checker
 
 source ~/venv/cita_checker/bin/activate
 ```
+
 3. Установите браузер Chrome:
 
 ```bash
 sudo pacman -S google-chrome
 ```
+
 4. Установите Chromedriver:
 
 ```bash
 yay -S chromedriver
 ```
+
 5. Проверьте совместимость версий:
 
 ```bash
 google-chrome-stable --version  # Должна быть версия 135+
 chromedriver --version         # Версии должны совпадать
 ```
+
 6. Установите зависимости:
 
 ```bash
 pip install undetected-chromedriver selenium python-dotenv requests
 ```
+
 7. Настройка программы:
 
 ```bash
@@ -79,7 +92,8 @@ nano .env  # Заполните свои данные
 ```
 
 # 🪟 Установка на Windows
-## Установите Python 3.11:
+
+## Установите Python 3.11
 
 Скачайте установщик с официального сайта
 
@@ -89,7 +103,7 @@ nano .env  # Заполните свои данные
 
 - ☑ Install launcher for all users
 
-## Установите Google Chrome:
+## Установите Google Chrome
 
 Скачайте с официального сайта
 
@@ -99,7 +113,7 @@ nano .env  # Заполните свои данные
 
 - Должна быть версия 135+
 
-## Установите Chromedriver:
+## Установите Chromedriver
 
 Скачайте соответствующую версию с официального сайта
 
@@ -110,6 +124,7 @@ nano .env  # Заполните свои данные
 ```cmd
 py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
 ```
+
 Настройка программы:
 
 - Скопируйте env.example в .env
@@ -119,6 +134,7 @@ py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
 - Заполните свои данные
 
 # 🔧 Настройка персональных данных
+
 Откройте файл .env и измените:
 
 ```ini
@@ -136,7 +152,9 @@ TELEGRAM_CHAT_ID="987654321"
 ```
 
 # 🚀 Запуск программы
+
 ## Linux
+
 ```source ~/venv/cita_checker/bin/activate
 python main.py
 ```
@@ -154,22 +172,28 @@ python main.py
 *не забудьсе синхнонизировать вашу версию Google chrome и ChromeWebDriver
 Вводим команды:
 ```chromedriver --version```
+
 - Узнаём версию WebDriver
 
 ```google-chrome-stable --version```
+
 - Узнаём версию google-chrome
 
 Желательно одинаковые, если нет то меняем - ```version_main=136``` на версию вашего google-chrome
 
 **Для чистоты перед запуском скрипта рекомендую выполнить (не обязательно)  
 ```pkill -f chromedriver && pkill -f chrome && rm -rf /home/v/.config/selenium-profile```
+
 - т.е. убить процессы браузера и почистить кэш selenium
 
 ## Windows
+
 ```bash
 py -3.11 main.py
 ```
+
 ## ⚠️ Важные примечания
+
 Программа автоматически делает паузу 5 минут при обнаружении "Too Many Requests"
 
 При обнаружении слотов:
@@ -183,12 +207,15 @@ py -3.11 main.py
 - Рекомендуется запускать на сервере с постоянным подключением к интернету
 
 # 🇬🇧 English Version
+
 ## 📋 Description
+
 The program automatically checks for available appointment slots (citas) on the official Spanish Ministry of Interior website for TIE card renewal for asylum seekers. Sends Telegram notifications when slots become available.
 
 ## 🔗 Official website: [https://icp.administracionelectronica.gob.es/icpco/index](https://icp.administracionelectronica.gob.es/icpco/index)
 
 ### 🔔 Telegram Bot Setup
+
 1. Create a bot via [BotFather](https://t.me/BotFather):
    - Send `/newbot`
    - Specify bot name (e.g.: `CitaCheckerBot`)
@@ -206,44 +233,53 @@ The program automatically checks for available appointment slots (citas) on the 
 ## ⚙️ Linux (Arch) Installation
 
 1. **Install Python 3.11:**
+
    ```bash
    sudo pacman -S python311
    ```
-### Create virtual environment:
+
+### Create virtual environment
 
 ```bash
 python3.11 -m venv ~/venv/cita_checker
 source ~/venv/cita_checker/bin/activate
 ```
-### Install Chrome browser:
+
+### Install Chrome browser
 
 ```bash
 sudo pacman -S google-chrome
 ```
-### Install Chromedriver:
+
+### Install Chromedriver
 
 ```bash
 yay -S chromedriver
 ```
-### Verify version compatibility:
+
+### Verify version compatibility
 
 ```bash
 google-chrome-stable --version  # Should be version 135+
 chromedriver --version         # Versions should match
 ```
-### Install dependencies:
+
+### Install dependencies
 
 ```bash
 pip install undetected-chromedriver selenium python-dotenv requests
 ```
-### Program configuration:
+
+### Program configuration
 
 ```bash
 cp .env.example .env
 nano .env  # Fill in your details
 ```
+
 ## 🪟 Windows Installation
-### Install Python 3.11:
+
+### Install Python 3.11
 
 Download installer from official site
 
@@ -253,7 +289,7 @@ During installation check:
 
 - ☑ Install launcher for all users
 
-### Install Google Chrome:
+### Install Google Chrome
 
 Download from official site
 
@@ -263,7 +299,7 @@ After installation verify version:
 
 - Should be version 135+
 
-### Install Chromedriver:
+### Install Chromedriver
 
 Download matching version from official site
 
@@ -274,7 +310,8 @@ Install dependencies (in CMD):
 ```cmd
 py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
 ```
-### Program configuration:
+
+### Program configuration
 
 Copy env.example to .env
 
@@ -283,6 +320,7 @@ Open .env in Notepad
 Enter your details
 
 ### 🔧 Personal Data Configuration
+
 Open .env file and modify:
 
 ```ini
@@ -305,8 +343,11 @@ python3.11 main.py
 ```
 
 # Windows
+
 ```py -3.11 main.py```
+
 ## ⚠️ Important Notes
+
 - Program automatically pauses for 5 minutes when detecting "Too Many Requests"
 
 When slots are found:
@@ -318,5 +359,7 @@ When slots are found:
 - Pauses for 1 hour before next cycle
 
 Recommended to run on a server with stable internet connection
+
 # 📜 License
-## MY License - Free for personal use.
+
+## MY License - Free for personal use
