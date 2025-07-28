@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  request_sender:
+    build: .
+    environment:
+      - PERSONAL_DATA=${PERSONAL_DATA}
+      - BOOKING_DATA=${BOOKING_DATA}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - .:/app
+    restart: unless-stopped

@@ -10,18 +10,22 @@ class TelegramNotifier:
         self.token = token
         self.chat_id = chat_id
 
-    def send_message(self, message: str):
+    def send_message(self, message: str, url: str = None):
+        full_message = f"🚨 *{message}*"
+        if url:
+            full_message += f"\n\nСсылка: {url}"
+
         try:
             response = requests.post(
                 f"https://api.telegram.org/bot{self.token}/sendMessage",
                 data={
                     "chat_id": self.chat_id,
-                    "text": message,
+                    "text": full_message,
                     "parse_mode": "Markdown",
                 },
                 timeout=5,
             )
             if not response.ok:
-                logging.error(f"Telegram send_message failed: {response.text}")
+                logging.error(f"Telegram error: {response.text}")
         except Exception as e:
-            logging.error(f"Telegram send_message exception: {str(e)}")
+            logging.error(f"Telegram exception: {str(e)}")

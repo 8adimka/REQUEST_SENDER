@@ -1,4 +1,4 @@
-from src.services.slot_checker import SlotCheckerService
+from services.slot_checker import SlotCheckerService
 
 
 def main():
