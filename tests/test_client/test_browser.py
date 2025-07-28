@@ -20,8 +20,9 @@ class TestBrowserOperations:
         assert request_client.driver == mock_driver
 
     def test_load_initial_page(self, request_client, mock_driver):
-        mock_driver.get.return_value = None
-        mock_driver.page_source = "<html>Test page</html>"
+        mock_driver.current_url = (
+            "https://icp.administracionelectronica.gob.es/icpco/acOpcDirect"
+        )
         assert request_client.load_initial_page() is True
         mock_driver.get.assert_called_once()
 

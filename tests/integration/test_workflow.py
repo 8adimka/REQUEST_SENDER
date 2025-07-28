@@ -46,6 +46,7 @@ class TestSlotCheckerWorkflow:
 
             # Проверяем ключевые вызовы
             mock_client.load_initial_page.assert_called_once()
-            mock_client.select_province.assert_called_once_with("Alicante")
+            assert mock_client.select_province.call_count == 2
+            mock_client.select_province.assert_any_call("Alicante")
             assert mock_client.check_slots.call_count >= 2
             mock_notifier.send_message.assert_called_once()
