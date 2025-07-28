@@ -1,36 +1,37 @@
 from unittest.mock import MagicMock, patch
 
-from selenium.webdriver.common.by import By
+import pytest
 
 
 class TestFormFilling:
-    @patch("selenium.webdriver.support.wait.WebDriverWait")
-    @patch("selenium.webdriver.support.select.Select")
-    def test_fill_personal_data(
-        self, mock_select, mock_webdriver_wait, request_client, mock_driver
-    ):
-        mock_element = MagicMock()
-        mock_driver.find_element.return_value = mock_element
+    @pytest.fixture
+    def mock_driver(self):
+        driver = MagicMock()
+        driver.find_element.return_value = MagicMock()
+        return driver
 
-        # Mock WebDriverWait chain
-        mock_wait_instance = MagicMock()
-        mock_wait_instance.until.return_value = mock_element
-        mock_webdriver_wait.return_value.__enter__.return_value = mock_wait_instance
+    @pytest.fixture
+    def request_client(self, mock_driver):
+        with patch("undetected_chromedriver.Chrome", return_value=mock_driver):
+            with patch(
+                "request_sender.settings.PERSONAL_DATA",
+                {
+                    "txtIdCitado": "TEST123",
+                    "txtDesCitado": "Test User",
+                    "txtAnnoCitado": "1990",
+                    "txtPaisNac": "Spain",
+                },
+            ):
+                from request_sender.client.request_client import RequestClient
 
-        # Mock Select chain
-        mock_select_instance = MagicMock()
-        mock_select_instance.select_by_visible_text.return_value = None
-        mock_select.return_value = mock_select_instance
+                client = RequestClient()
+            return client
 
-        request_client.PERSONAL_DATA = {
-            "txtIdCitado": "TEST123",
-            "txtDesCitado": "Test User",
-            "txtAnnoCitado": "1990",
-            "txtPaisNac": "Spain",
-        }
-
-        assert request_client.fill_personal_data() is True
+    def test_fill_personal_data(self, request_client, mock_driver):
+        with patch("selenium.webdriver.support.wait.WebDriverWait") as mock_wait:
+            mock_wait.return_value.until.return_value = MagicMock()
+            assert request_client.fill_personal_data() is True
 
     def test_select_dropdown_failure(self, request_client, mock_driver):
         mock_driver.find_element.side_effect = Exception("Element not found")
-        assert request_client._select_dropdown(By.ID, "test_id", "Option") is False
+        assert request_client._select_dropdown("id", "test_id", "Option") is False

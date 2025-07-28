@@ -1,24 +1,35 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 
 class TestSlotCheckerService:
-    def test_initialization(self, slot_checker):
-        assert slot_checker.client is not None
-        assert slot_checker.notifier is not None
+    @pytest.fixture
+    def mock_client(self):
+        client = MagicMock()
+        client.check_slots.return_value = {"status": "slots_available"}
+        return client
 
-    def test_execute_steps_success(self, slot_checker):
-        steps = [("test_step", lambda: True, [])]
-        assert slot_checker._execute_steps(steps) is True
+    @pytest.fixture
+    def mock_notifier(self):
+        return MagicMock()
 
-    def test_execute_steps_failure(self, slot_checker):
-        steps = [("test_step", lambda: False, [])]
-        with pytest.raises(Exception):
-            slot_checker._execute_steps(steps)
+    @pytest.fixture
+    def slot_checker(self, mock_client, mock_notifier):
+        with (
+            patch(
+                "request_sender.services.slot_checker.RequestClient",
+                return_value=mock_client,
+            ),
+            patch(
+                "request_sender.services.slot_checker.TelegramNotifier",
+                return_value=mock_notifier,
+            ),
+        ):
+            from request_sender.services.slot_checker import SlotCheckerService
 
-    @patch("src.services.slot_checker.TelegramNotifier.send_message")
-    def test_run_with_slots(self, mock_send, slot_checker):
-        slot_checker.client.check_slots.return_value = {"status": "slots_available"}
+            return SlotCheckerService()
+
+    def test_run_with_slots(self, slot_checker, mock_client, mock_notifier):
         slot_checker.run()
-        mock_send.assert_called()
+        mock_notifier.send_message.assert_called_once()

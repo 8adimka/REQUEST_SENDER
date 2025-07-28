@@ -2,9 +2,9 @@ import logging
 import random
 import time
 
-from client.request_client import RequestClient
-from settings import MAX_RETRIES, RATE_LIMIT_DELAY
-from telegram.notifier import TelegramNotifier
+from request_sender.client.request_client import RequestClient
+from request_sender.settings import MAX_RETRIES, RATE_LIMIT_DELAY
+from request_sender.telegram.notifier import TelegramNotifier
 
 
 class SlotCheckerService:
