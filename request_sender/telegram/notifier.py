@@ -1,8 +1,9 @@
 import logging
+from typing import Optional
 
 import requests
 
-from src.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from request_sender.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 
 class TelegramNotifier:
@@ -10,7 +11,7 @@ class TelegramNotifier:
         self.token = token
         self.chat_id = chat_id
 
-    def send_message(self, message: str, url: str = None):
+    def send_message(self, message: str, url: Optional[str] = None):
         full_message = f"🚨 *{message}*"
         if url:
             full_message += f"\n\nСсылка: {url}"

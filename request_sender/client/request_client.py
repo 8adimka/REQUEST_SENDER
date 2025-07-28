@@ -11,7 +11,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
-from src.settings import (
+from request_sender.settings import (
     BOOKING_DATA,
     MAX_DELAY,
     MIN_DELAY,
@@ -52,7 +52,7 @@ class RequestClient:
         )
 
         self.driver = uc.Chrome(
-            options=options, headless=False, use_subprocess=True, version_main=136
+            options=options, headless=False, use_subprocess=True, version_main=138
         )
 
         self.driver.execute_cdp_cmd(
