@@ -23,6 +23,7 @@
 ## Среда выполнения
 
 - Arch Linux / Windows (проект кроссплатформенный)
+- Docker (рекомендуемый способ развертывания)
 - Google Chrome (работа через undetected-chromedriver)
 
 ## 🔗 Официальный сайт: [https://icp.administracionelectronica.gob.es/icpco/index](https://icp.administracionelectronica.gob.es/icpco/index)
@@ -43,7 +44,54 @@
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHAT_ID`
 
-### ⚙️ Установка на Linux (Arch)
+# Настройка программы
+
+- Скопируйте env.example в .env
+
+- Откройте .env в Блокноте
+
+- Заполните свои данные
+
+## 🔧 Настройка персональных данных
+
+Откройте файл .env и измените:
+
+```ini
+# Ваши личные данные
+PERSONAL_DATA='{
+  "txtIdCitado": "Z1234567R",       # Ваш NIE/NIF
+  "txtDesCitado": "IVAN PETROV",    # Ваше имя как в документе
+  "txtAnnoCitado": "1985",          # Год рождения
+  "txtPaisNac": "RUSIA"             # Страна рождения (испанское написание)
+}'
+
+# Данные Telegram-бота
+TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
+TELEGRAM_CHAT_ID="your_chat_ID"
+```
+
+# 🚀 Запуск программы
+
+## Docker (рекомендуемый способ)
+
+- Запускает весь процесс в закрытом контейнере (вы его не видите), но в случае успеха - получите все данные уведомлением в telegram.
+- Это избавляет вас от необходимости вручную настраивать все зависимости, но лишает вас возможности вручную доввести что-либо в браузере, в случае необходимости. Однако, основная функциональность послостью автоматизирована.
+
+1. Убедитесь что установлен Docker и Docker Compose
+2. Заполните .env файл (скопируйте из .env.example)
+3. Выполните команды:
+
+```bash
+docker-compose build
+docker-compose up
+```
+
+- Доступные порты:
+
+  - 4444 - Selenium Grid
+  - 5900 - VNC (для отладки)
+
+# ⚙️ Установка и локальный запуск на Linux (Arch)
 
 1. **Установите Python 3.11:**
 
@@ -51,12 +99,12 @@
    sudo pacman -S python311
    ```
 
-2. Создайте виртуальное окружение:
+2. Создайте виртуальное окружение в папке проекта:
 
 ```bash
-python3.11 -m venv ~/venv/cita_checker
+python3.11 -m venv env_name
 
-source ~/venv/cita_checker/bin/activate
+source env_name/bin/activate
 ```
 
 3. Установите браузер Chrome:
@@ -90,6 +138,40 @@ pip install undetected-chromedriver selenium python-dotenv requests
 cp .env.example .env
 nano .env  # Заполните свои данные
 ```
+
+## Linux (локальный запуск)
+
+```source env_name/bin/activate
+PYTHONPATH=. python scripts/main.py
+```
+
+### Пара небольших дополнений  
+
+в файле /request_client.py
+есть строка - version_main=136
+в участке ```self.driver = uc.Chrome(
+            options=options,
+            headless=False,
+            use_subprocess=True,
+            version_main=136
+        )```
+
+- не забудьсе синхнонизировать вашу версию Google chrome и ChromeWebDriver
+- Вводим команды:
+  - ```chromedriver --version```
+
+    - Узнаём версию WebDriver
+
+  - ```google-chrome-stable --version```
+
+    - Узнаём версию google-chrome
+
+Желательно одинаковые, если нет то меняем - ```version_main=136``` на версию вашего google-chrome
+
+- Для чистоты перед запуском скрипта рекомендую выполнить (не обязательно)  
+```pkill -f chromedriver && pkill -f chrome && rm -rf /home/v/.config/selenium-profile```
+
+- т.е. убить процессы браузера и почистить кэш selenium
 
 # 🪟 Установка на Windows
 
@@ -125,74 +207,19 @@ nano .env  # Заполните свои данные
 py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
 ```
 
-Настройка программы:
-
-- Скопируйте env.example в .env
-
-- Откройте .env в Блокноте
-
-- Заполните свои данные
-
-# 🔧 Настройка персональных данных
-
-Откройте файл .env и измените:
-
-```ini
-# Ваши личные данные
-PERSONAL_DATA='{
-  "txtIdCitado": "Z1234567R",       # Ваш NIE/NIF
-  "txtDesCitado": "IVAN PETROV",    # Ваше имя как в документе
-  "txtAnnoCitado": "1985",          # Год рождения
-  "txtPaisNac": "RUSIA"             # Страна рождения (испанское написание)
-}'
-
-# Данные Telegram-бота
-TELEGRAM_BOT_TOKEN="123456789:AAFm2e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8"
-TELEGRAM_CHAT_ID="987654321"
-```
-
-# 🚀 Запуск программы
-
-## Linux
-
-```source ~/venv/cita_checker/bin/activate
-python main.py
-```
-
-*Пара небольших дополнений:  
-в файле /request_client.py
-есть строка - version_main=136
-в участке ```self.driver = uc.Chrome(
-            options=options,
-            headless=False,
-            use_subprocess=True,
-            version_main=136
-        )```
-
-*не забудьсе синхнонизировать вашу версию Google chrome и ChromeWebDriver
-Вводим команды:
-```chromedriver --version```
-
-- Узнаём версию WebDriver
-
-```google-chrome-stable --version```
-
-- Узнаём версию google-chrome
-
-Желательно одинаковые, если нет то меняем - ```version_main=136``` на версию вашего google-chrome
-
-**Для чистоты перед запуском скрипта рекомендую выполнить (не обязательно)  
-```pkill -f chromedriver && pkill -f chrome && rm -rf /home/v/.config/selenium-profile```
-
-- т.е. убить процессы браузера и почистить кэш selenium
-
-## Windows
+## Локальный запуск Windows
 
 ```bash
 py -3.11 main.py
 ```
 
 ## ⚠️ Важные примечания
+
+### Для Docker-развертывания
+
+- Убедитесь что версии Chrome в контейнере и ChromeDriver совместимы
+- Для отладки можно подключиться через VNC (порт 5900)
+- Логи доступны через `docker-compose logs`
 
 Программа автоматически делает паузу 5 минут при обнаружении "Too Many Requests"
 
@@ -206,11 +233,27 @@ py -3.11 main.py
 
 - Рекомендуется запускать на сервере с постоянным подключением к интернету
 
+# Automated Appointment Slot Checker
+
 # 🇬🇧 English Version
 
 ## 📋 Description
 
-The program automatically checks for available appointment slots (citas) on the official Spanish Ministry of Interior website for TIE card renewal for asylum seekers. Sends Telegram notifications when slots become available.
+The program automatically checks for available appointment slots (citas) on the official Spanish Ministry of Interior website for renewing identity documents (TIE, NIE, tarjeta roja) for asylum seekers. When free slots are found, it sends a notification to your Telegram bot, then can either automatically enter your personal data and complete the booking, or leave the browser open for manual completion.
+
+## Technology Stack
+
+- Python 3 - main programming language
+- selenium - browser automation
+- undetected-chromedriver - modified Chrome driver to bypass bot protection
+- requests - for sending HTTP requests (e.g. to APIs)
+- python-dotenv - for loading environment variables from .env file
+
+## Runtime Environment
+
+- Arch Linux / Windows (cross-platform project)
+- Docker (recommended deployment method)
+- Google Chrome (works through undetected-chromedriver)
 
 ## 🔗 Official website: [https://icp.administracionelectronica.gob.es/icpco/index](https://icp.administracionelectronica.gob.es/icpco/index)
 
@@ -219,7 +262,7 @@ The program automatically checks for available appointment slots (citas) on the 
 1. Create a bot via [BotFather](https://t.me/BotFather):
    - Send `/newbot`
    - Specify bot name (e.g.: `CitaCheckerBot`)
-   - Get token in format `123456789:AAFm2e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8`
+   - Get token in format `123456789:AAFm2e4f5g6h7i8j9k0l1m2n9o4p5q6r7s8`
 
 2. Get your Chat ID:
    - Add [userinfobot](https://t.me/userinfobot)
@@ -230,96 +273,13 @@ The program automatically checks for available appointment slots (citas) on the 
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHAT_ID`
 
-## ⚙️ Linux (Arch) Installation
+# Program Configuration
 
-1. **Install Python 3.11:**
+- Copy env.example to .env
+- Open .env in a text editor
+- Fill in your details
 
-   ```bash
-   sudo pacman -S python311
-   ```
-
-### Create virtual environment
-
-```bash
-python3.11 -m venv ~/venv/cita_checker
-source ~/venv/cita_checker/bin/activate
-```
-
-### Install Chrome browser
-
-```bash
-sudo pacman -S google-chrome
-```
-
-### Install Chromedriver
-
-```bash
-yay -S chromedriver
-```
-
-### Verify version compatibility
-
-```bash
-google-chrome-stable --version  # Should be version 135+
-chromedriver --version         # Versions should match
-```
-
-### Install dependencies
-
-```bash
-pip install undetected-chromedriver selenium python-dotenv requests
-```
-
-### Program configuration
-
-```bash
-cp .env.example .env
-nano .env  # Fill in your details
-```
-
-## 🪟 Windows Installation
-
-### Install Python 3.11
-
-Download installer from official site
-
-During installation check:
-
-- ☑ Add Python to PATH
-
-- ☑ Install launcher for all users
-
-### Install Google Chrome
-
-Download from official site
-
-After installation verify version:
-
-- Open chrome://settings/help
-
-- Should be version 135+
-
-### Install Chromedriver
-
-Download matching version from official site
-
-Unzip chromedriver.exe to program folder
-
-Install dependencies (in CMD):
-
-```cmd
-py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
-```
-
-### Program configuration
-
-Copy env.example to .env
-
-Open .env in Notepad
-
-Enter your details
-
-### 🔧 Personal Data Configuration
+## 🔧 Personal Data Configuration
 
 Open .env file and modify:
 
@@ -333,33 +293,160 @@ PERSONAL_DATA='{
 }'
 
 # Telegram bot data
-TELEGRAM_BOT_TOKEN="123456789:AAFm2e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8"
-TELEGRAM_CHAT_ID="987654321"
-🚀 Running the Program
-bash
-# Linux
-source ~/venv/cita_checker/bin/activate
-python3.11 main.py
+TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
+TELEGRAM_CHAT_ID="your_chat_ID"
 ```
 
-# Windows
+# 🚀 Running the Program
 
-```py -3.11 main.py```
+## Docker (Recommended Method)
+
+1. Make sure Docker and Docker Compose are installed
+2. Configure .env file (copy from .env.example)
+3. Run commands:
+
+```bash
+docker-compose build
+docker-compose up
+```
+
+Available ports:
+
+- 4444 - Selenium Grid
+- 5900 - VNC (for debugging)
+
+# ⚙️ Linux (Arch) Installation
+
+1. **Install Python 3.11:**
+
+   ```bash
+   sudo pacman -S python311
+   ```
+
+2. Create virtual environment in project folder:
+
+```bash
+python3.11 -m venv env_name
+source env_name/bin/activate
+```
+
+3. Install Chrome browser:
+
+```bash
+sudo pacman -S google-chrome
+```
+
+4. Install Chromedriver:
+
+```bash
+yay -S chromedriver
+```
+
+5. Verify version compatibility:
+
+```bash
+google-chrome-stable --version  # Should be version 135+
+chromedriver --version         # Versions should match
+```
+
+6. Install dependencies:
+
+```bash
+pip install undetected-chromedriver selenium python-dotenv requests
+```
+
+7. Program configuration:
+
+```bash
+cp .env.example .env
+nano .env  # Fill in your details
+```
+
+## Linux (Local Run)
+
+```bash
+source env_name/bin/activate
+PYTHONPATH=. python scripts/main.py
+```
+
+### Important Notes
+
+In file /request_client.py
+there's a line - version_main=136
+in section ```self.driver = uc.Chrome(
+            options=options,
+            headless=False,
+            use_subprocess=True,
+            version_main=136
+        )```
+
+- Don't forget to synchronize your Google Chrome and ChromeWebDriver versions
+- Run commands:
+  - ```chromedriver --version``` - Check WebDriver version
+  - ```google-chrome-stable --version``` - Check Chrome version
+
+Versions should match, if not change ```version_main=136``` to your Chrome version
+
+- For clean runs (optional but recommended):
+```pkill -f chromedriver && pkill -f chrome && rm -rf /home/v/.config/selenium-profile```
+
+- This kills browser processes and cleans selenium cache
+
+# 🪟 Windows Installation
+
+## Install Python 3.11
+
+Download installer from official site
+
+During installation check:
+
+- ☑ Add Python to PATH
+- ☑ Install launcher for all users
+
+## Install Google Chrome
+
+Download from official site
+
+After installation verify version:
+
+- Open chrome://settings/help
+- Should be version 135+
+
+## Install Chromedriver
+
+Download matching version from official site
+Unzip chromedriver.exe to program folder
+Install dependencies (in CMD):
+
+```cmd
+py -3.11 -m pip install undetected-chromedriver selenium python-dotenv requests
+```
+
+## Windows Local Run
+
+```bash
+py -3.11 main.py
+```
 
 ## ⚠️ Important Notes
 
-- Program automatically pauses for 5 minutes when detecting "Too Many Requests"
+### For Docker Deployment
+
+- Ensure Chrome and ChromeDriver versions in container are compatible
+- Debug via VNC (port 5900)
+- View logs with `docker-compose logs`
+
+Program automatically pauses for 5 minutes when detecting "Too Many Requests"
 
 When slots are found:
 
 - Sends Telegram notification
-
 - Keeps browser open for manual completion
-
 - Pauses for 1 hour before next cycle
-
-Recommended to run on a server with stable internet connection
+- Recommended to run on a server with stable internet connection
 
 # 📜 License
 
-## MY License - Free for personal use
+MIT License - Free for personal and commercial use
+
+Copyright (c) 2025 REQUEST_SENDER Project

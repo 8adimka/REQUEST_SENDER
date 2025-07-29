@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from request_sender.telegram.notifier import TelegramNotifier
+from app.telegram.notifier import TelegramNotifier
 
 
 @pytest.fixture
@@ -60,7 +60,7 @@ def mock_driver():
 def request_client(mock_driver):
     with (
         patch("undetected_chromedriver.Chrome", return_value=mock_driver),
-        patch("request_sender.client.request_client.WebDriverWait") as mock_wait,
+        patch("app.client.request_client.WebDriverWait") as mock_wait,
         patch("selenium.webdriver.support.ui.Select") as mock_select,
         patch("selenium.webdriver.common.action_chains.ActionChains") as mock_actions,
     ):
@@ -119,7 +119,7 @@ def request_client(mock_driver):
         )
         mock_actions.return_value.perform.return_value = None
 
-        from request_sender.client.request_client import RequestClient
+        from app.client.request_client import RequestClient
 
         client = RequestClient()
         yield client

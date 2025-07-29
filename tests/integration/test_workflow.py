@@ -28,18 +28,18 @@ class TestSlotCheckerWorkflow:
     def test_successful_workflow(self, mock_client, mock_notifier):
         with (
             patch(
-                "request_sender.services.slot_checker.RequestClient",
+                "app.services.slot_checker.RequestClient",
                 return_value=mock_client,
             ),
             patch(
-                "request_sender.services.slot_checker.TelegramNotifier",
+                "app.services.slot_checker.TelegramNotifier",
                 return_value=mock_notifier,
             ),
             patch("time.sleep"),  # Убираем реальные задержки
             patch("random.uniform", return_value=0),  # Фиксируем задержки
             patch("logging.info"),  # Отключаем логирование
         ):
-            from request_sender.services.slot_checker import SlotCheckerService
+            from app.services.slot_checker import SlotCheckerService
 
             checker = SlotCheckerService()
             checker.run()  # Должен завершиться после второго check_slots

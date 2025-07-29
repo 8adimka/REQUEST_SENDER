@@ -11,7 +11,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 
-from request_sender.settings import (
+from app.settings import (
     BOOKING_DATA,
     MAX_DELAY,
     MIN_DELAY,

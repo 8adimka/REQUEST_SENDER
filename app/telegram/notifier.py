@@ -3,7 +3,7 @@ from typing import Optional
 
 import requests
 
-from request_sender.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from app.settings import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
 
 class TelegramNotifier:

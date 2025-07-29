@@ -37,7 +37,7 @@ class TestFormFilling:
     @pytest.fixture
     def request_client(self, mock_driver):
         with patch("undetected_chromedriver.Chrome", return_value=mock_driver):
-            from request_sender.client.request_client import RequestClient
+            from app.client.request_client import RequestClient
 
             client = RequestClient()
             return client

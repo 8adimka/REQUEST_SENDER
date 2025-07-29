@@ -1,13 +1,31 @@
-version: '3.8'
-
 services:
-  request_sender:
+  app:
+    container_name: app
     build: .
     environment:
       - PERSONAL_DATA=${PERSONAL_DATA}
       - BOOKING_DATA=${BOOKING_DATA}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - DISPLAY=:99
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=800
+      - SCREEN_DEPTH=24
+    ports:
+      - "4444:4444" # Selenium Grid port (если используется)
+      - "5900:5900" # VNC (для отладки, если настроен)
     volumes:
       - .:/app
+      - /dev/shm:/dev/shm # Chrome стабильно работает с этим volume
+    networks:
+      - request_network
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4444" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  request_network:
+    driver: bridge
