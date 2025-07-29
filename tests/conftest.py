@@ -15,13 +15,13 @@ def mock_driver():
         <head><title>Test Page</title></head>
         <body>
             <select name="form" id="provinceSelect">
-                <option value="1">Alicante</option>
+                <option value="1">Alicante (AL)</option>
             </select>
             <input type="text" id="txtIdCitado">
             <input type="text" id="txtDesCitado">
             <input type="text" id="txtAnnoCitado">
             <select id="txtPaisNac">
-                <option value="Spain">Spain</option>
+                <option value="RUSIA">RUSIA</option>
             </select>
             <button id="btnAceptar"></button>
             <button id="btnEnviar"></button>
@@ -29,8 +29,8 @@ def mock_driver():
     </html>
     """
 
-    # Mock find_element to return proper elements
     def mock_find_element(by, value):
+        print(f"Finding element: by={by}, value={value}")
         element = MagicMock()
         if value == "provinceSelect":
             element.tag_name = "select"
@@ -48,13 +48,9 @@ def mock_driver():
         return element
 
     driver.find_element.side_effect = mock_find_element
-
-    # Mock for context manager support
     driver.find_element.return_value.__enter__.return_value = (
         driver.find_element.return_value
     )
-
-    # Mock page navigation
     driver.get.return_value = None
 
     return driver
@@ -62,50 +58,66 @@ def mock_driver():
 
 @pytest.fixture
 def request_client(mock_driver):
-    """
-    Обратите внимание: patch делаем до импорта RequestClient!
-    Пути к patch должны строго совпадать с импортами в request_client.py
-    """
     with (
         patch("undetected_chromedriver.Chrome", return_value=mock_driver),
         patch("request_sender.client.request_client.WebDriverWait") as mock_wait,
         patch("selenium.webdriver.support.ui.Select") as mock_select,
-        patch(
-            "request_sender.settings.PERSONAL_DATA",
-            {
-                "txtIdCitado": "TEST123",
-                "txtDesCitado": "Test User",
-                "txtAnnoCitado": "1990",
-                "txtPaisNac": "Spain",
-            },
-        ),
+        patch("selenium.webdriver.common.action_chains.ActionChains") as mock_actions,
     ):
-        # Сделаем mock для WebDriverWait, чтобы он возвращал правильные элементы
+
         def mock_wait_until(condition):
+            print(
+                f"WebDriverWait condition: {condition.__name__}, Locator: {condition.locator}"
+            )
             if (
                 hasattr(condition, "__name__")
                 and condition.__name__ == "presence_of_element_located"
             ):
                 locator = condition.locator
-                if locator[1] == "txtPaisNac":
+                if locator[1] in ["txtPaisNac", "form"]:
                     element = MagicMock()
                     element.tag_name = "select"
+                    return element
+                return mock_driver.find_element(*locator)
+            elif (
+                hasattr(condition, "__name__")
+                and condition.__name__ == "element_to_be_clickable"
+            ):
+                locator = condition.locator
+                if locator[1] in ["btnAceptar", "btnEnviar"]:
+                    element = MagicMock()
+                    element.tag_name = "button"
+                    element.click.return_value = None
                     return element
             return mock_driver.find_element(*locator)
 
         mock_wait.return_value.until.side_effect = mock_wait_until
 
-        # Настроим mock для Select
         def mock_select_constructor(element):
+            print(f"Creating Select for element with tag: {element.tag_name}")
             select = MagicMock()
             if not hasattr(element, "tag_name") or element.tag_name != "select":
                 raise Exception(
                     f"Select only works on <select> elements, not on {element}"
                 )
-            select.select_by_visible_text.return_value = None
+
+            def select_by_visible_text(text):
+                print(f"Selecting: {text}")
+                if text not in ["RUSIA", "Alicante (AL)"]:
+                    raise Exception(
+                        f"Could not locate element with visible text: {text}"
+                    )
+                return None
+
+            select.select_by_visible_text.side_effect = select_by_visible_text
             return select
 
         mock_select.side_effect = mock_select_constructor
+
+        mock_actions.return_value.move_to_element_with_offset.return_value = (
+            mock_actions.return_value
+        )
+        mock_actions.return_value.perform.return_value = None
 
         from request_sender.client.request_client import RequestClient
 

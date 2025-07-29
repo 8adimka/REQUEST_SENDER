@@ -35,3 +35,11 @@ class TestBrowserOperations:
         with patch("time.sleep") as mock_sleep:
             request_client._random_delay()
             mock_sleep.assert_called_once()
+
+    def test_load_initial_page_failure(self, request_client, mock_driver):
+        mock_driver.get.side_effect = Exception("Page load failed")
+        assert request_client.load_initial_page() is False
+
+    def test_restart_browser_failure(self, request_client, mock_driver):
+        mock_driver.quit.side_effect = Exception("Quit failed")
+        assert request_client.restart_browser() is False

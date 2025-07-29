@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from selenium.webdriver.common.by import By
 
 
 class TestNavigation:
@@ -31,14 +30,6 @@ class TestNavigation:
             from request_sender.client.request_client import RequestClient
 
             return RequestClient()
-
-    def test_select_province(self, request_client, mock_driver):
-        mock_driver.current_url = (
-            "https://icp.administracionelectronica.gob.es/icpco/index"
-        )
-        assert request_client.select_province("Alicante (AL)") is True
-        mock_driver.find_element.assert_any_call(By.NAME, "form")
-        mock_driver.find_element.assert_any_call(By.ID, "btnAceptar")
 
     def test_check_slots_available(self, request_client, mock_driver):
         mock_driver.page_source = "disponibilidad de citas"

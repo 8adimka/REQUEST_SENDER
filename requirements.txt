@@ -3,3 +3,5 @@ requests-toolbelt==1.0.0
 undetected-chromedriver==3.5.5
 selenium==4.31.0
 python-dotenv==1.0.1
+pytest==8.2.0
+pytest-selenium==4.0.0
